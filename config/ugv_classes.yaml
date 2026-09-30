@@ -1,0 +1,18 @@
+# UGV production perception classes
+
+ugv_classes:
+  0:
+    name: unknown
+    description: Uncertain or insufficiently observed area
+
+  1:
+    name: traversable
+    description: Terrain considered safe for UGV travel
+
+  2:
+    name: non_traversable
+    description: Terrain that should not be driven over
+
+  3:
+    name: obstacle
+    description: Physical object requiring avoidance

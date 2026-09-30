@@ -1,0 +1,23 @@
+# RELLIS-3D semantic class mapping
+# Source: official RELLIS-3D label definitions
+
+rellis_classes:
+  3:
+    name: grass
+    category: terrain
+
+  4:
+    name: tree
+    category: obstacle
+
+  7:
+    name: sky
+    category: background
+
+  19:
+    name: bush
+    category: obstacle
+
+  33:
+    name: mud
+    category: hazardous_terrain

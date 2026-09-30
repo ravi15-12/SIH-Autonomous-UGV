@@ -1,0 +1,98 @@
+# ============================================================
+# UGV Production Configuration
+# ============================================================
+
+robot:
+  name: ugv_prod
+
+  # Approximate wheel diameter.
+  # Update after the actual hardware is selected.
+  wheel_diameter_m: 0.06
+
+  # Update after measuring the actual wheel-to-wheel geometry.
+  wheel_base_m: 0.30
+  track_width_m: 0.30
+
+    # Approximate physical chassis dimensions.
+  # Update after the actual hardware is selected and measured.
+  length_m: 0.40
+  width_m: 0.30
+
+  # Approximate chassis overhang beyond the wheelbase.
+  # Update after measuring the actual chassis.
+  front_overhang_m: 0.05
+  rear_overhang_m: 0.05
+
+  safety:
+    additional_margin_m: 0.00
+
+  max_linear_velocity_mps: 1.0
+  max_angular_velocity_radps: 1.0
+
+
+camera:
+  width: 1280
+  height: 720
+  fps: 30
+
+  horizontal_fov_deg: 90.0
+
+  # Will be replaced with calibrated values
+  # after the physical camera is selected.
+  calibration:
+    enabled: false
+
+
+perception:
+  input_width: 640
+  input_height: 384
+
+  confidence_threshold: 0.50
+
+  classes:
+    0: unknown
+    1: traversable
+    2: non_traversable
+    3: obstacle
+
+
+localization:
+  enabled: false
+
+  visual_odometry:
+    enabled: false
+
+  slam:
+    enabled: false
+
+
+mapping:
+  enabled: false
+
+  costmap:
+    resolution_m: 0.05
+    width_m: 10.0
+    height_m: 10.0
+
+
+planning:
+  enabled: false
+
+  global_planner: "A_STAR"
+  local_planner: "DWA"
+
+
+control:
+  enabled: false
+
+  control_frequency_hz: 20
+
+
+safety:
+  emergency_stop_enabled: true
+
+  # If perception confidence drops below this,
+  # the system should enter a safe state.
+  minimum_perception_confidence: 0.40
+
+  maximum_allowed_obstacle_distance_m: 1.5

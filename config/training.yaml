@@ -1,0 +1,45 @@
+# ============================================================
+# UGV Perception Training Configuration
+# Baseline Experiment
+# ============================================================
+
+training:
+
+  # Start conservatively for 16 GB unified memory.
+  batch_size: 4
+
+  epochs: 15
+
+  # Initial learning rate.
+  learning_rate: 0.0001
+
+  optimizer: "AdamW"
+
+  weight_decay: 0.0001
+
+  # Reduce learning rate when validation loss stops improving.
+  scheduler:
+    type: "ReduceLROnPlateau"
+    factor: 0.5
+    patience: 3
+    min_lr: 0.000001
+
+  # Stop if validation loss does not improve.
+  early_stopping:
+    enabled: true
+    patience: 7
+
+  # Save the best validation model.
+  checkpoint:
+    directory: "logs/checkpoints/experiment_02"
+    filename: "best_model.pth"
+
+  # Reproducibility.
+  seed: 42
+
+  # Data loading.
+  num_workers: 0
+
+  # No augmentation for the first baseline.
+  augmentation:
+    enabled: true

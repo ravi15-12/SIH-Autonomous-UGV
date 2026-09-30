@@ -1,0 +1,27 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Build outputs
+build/
+*.a
+*.so
+*.dylib
+
+# Datasets / large data
+datasets/
+
+# Runtime logs and generated outputs
+logs/
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+
+# Python cache / tooling
+.pytest_cache/
+.mypy_cache/

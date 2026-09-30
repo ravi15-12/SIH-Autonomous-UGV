@@ -1,0 +1,32 @@
+# UGV camera configuration
+#
+# These values are PROVISIONAL software-development defaults.
+# They must be replaced with measured/calibrated values after
+# the physical camera is mounted on the UGV.
+
+camera:
+  height_m: 0.50
+
+  # Positive pitch means the camera is tilted downward.
+  pitch_deg: 15.0
+
+  roll_deg: 0.0
+  yaw_deg: 0.0
+
+  horizontal_offset_m: 0.0
+  vertical_offset_m: 0.0
+
+  width: 1280
+  height: 720
+
+  hfov_deg: 90.0
+  max_ground_distance_m: 8.0
+
+local_map:
+  resolution_m: 0.05
+
+  forward_min_m: 0.0
+  forward_max_m: 8.0
+
+  left_min_m: -4.0
+  left_max_m: 4.0

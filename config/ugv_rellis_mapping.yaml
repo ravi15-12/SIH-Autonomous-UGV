@@ -1,0 +1,35 @@
+# ============================================================
+# UGV Traversability Mapping for RELLIS-3D
+# ============================================================
+# First-pass conservative mapping.
+# This mapping will be validated and refined during testing.
+
+mapping:
+
+  unknown:
+    - void
+    - sky
+
+  traversable:
+    - dirt
+    - grass
+    - asphalt
+    - concrete
+
+  non_traversable:
+    - mud
+    - puddle
+    - water
+    - rubble
+
+  obstacle:
+    - tree
+    - bush
+    - vehicle
+    - object
+    - person
+    - fence
+    - barrier
+    - log
+    - pole
+    - building

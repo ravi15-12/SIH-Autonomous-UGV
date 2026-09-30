@@ -1,0 +1,14 @@
+model:
+  architecture: "DeepLabV3Plus"
+  encoder: "resnet18"
+  encoder_weights: "imagenet"
+  classes: 3
+  activation: null
+
+training:
+  ignore_index: 0
+
+  class_weights:
+    traversable: 0.9104
+    non_traversable: 8.3293
+    obstacle: 1.0000
