@@ -33,6 +33,7 @@ CHECKPOINT_PATH = os.path.join(
     PROJECT_ROOT,
     "logs",
     "checkpoints",
+    "experiment_02",
     "best_model.pth"
 )
 
