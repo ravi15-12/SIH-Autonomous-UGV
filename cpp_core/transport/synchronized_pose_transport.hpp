@@ -31,7 +31,12 @@ public:
 
     bool open();
 
+    // Blocking pose read.
     bool consume(PoseFrame& output);
+
+    // Non-blocking pose read.
+    // Returns true only when a new pose was available and decoded.
+    bool tryConsume(PoseFrame& output);
 
     void close();
 

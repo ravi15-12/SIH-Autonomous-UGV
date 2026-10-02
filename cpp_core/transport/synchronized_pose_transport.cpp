@@ -130,6 +130,45 @@ bool SynchronizedPoseTransport::consume(
     return decoded;
 }
 
+bool SynchronizedPoseTransport::tryConsume(
+    PoseFrame& output
+) {
+    output = {};
+
+    if (mapped_memory_ == nullptr ||
+        ready_semaphore_ == nullptr ||
+        free_semaphore_ == nullptr) {
+        return false;
+    }
+
+    int result;
+
+    do {
+        result = ::sem_trywait(
+            static_cast<sem_t*>(ready_semaphore_)
+        );
+    } while (result != 0 && errno == EINTR);
+
+    if (result != 0) {
+        // EAGAIN means there is simply no new pose available.
+        return false;
+    }
+
+    const bool decoded = reader_.decode(
+        static_cast<const std::uint8_t*>(
+            mapped_memory_
+        ),
+        mapped_size_,
+        output
+    );
+
+    ::sem_post(
+        static_cast<sem_t*>(free_semaphore_)
+    );
+
+    return decoded;
+}
+
 void SynchronizedPoseTransport::close() {
     if (ready_semaphore_ != nullptr) {
         ::sem_close(

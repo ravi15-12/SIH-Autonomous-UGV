@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../transport/synchronized_metric_map_transport.hpp"
+#include "../transport/synchronized_pose_transport.hpp"
 #include "../../mapping/metric_map_costmap_adapter.hpp"
 #include "../planning/local_planner.hpp"
 #include "../control/motion_controller.hpp"
@@ -23,7 +24,6 @@ struct UgvRuntimeOutput {
     Path path{};
     bool map_valid = false;
     bool robot_footprint_observed = false;
-
 };
 
 class UgvRuntime {
@@ -37,9 +37,16 @@ public:
 
 private:
     UgvRuntimeConfig config_;
+
     LocalPlanner planner_;
     MotionController controller_;
+
     SynchronizedMetricMapTransport map_transport_;
+    SynchronizedPoseTransport pose_transport_;
+
+    PlannerPose current_pose_{};
+
+    bool pose_transport_opened_ = false;
     bool opened_ = false;
 };
 

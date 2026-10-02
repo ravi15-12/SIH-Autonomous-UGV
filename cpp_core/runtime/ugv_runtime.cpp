@@ -3,6 +3,7 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <iostream>
 
 namespace ugv {
 
@@ -133,10 +134,13 @@ bool UgvRuntimeConfig::isValid() const noexcept {
            map_geometry.resolution_m > 0.0;
 }
 
-UgvRuntime::UgvRuntime(const UgvRuntimeConfig& config)
+UgvRuntime::UgvRuntime(
+    const UgvRuntimeConfig& config
+)
     : config_(config),
       planner_(config.planner_config),
-      controller_(config.controller_config) {
+      controller_(config.controller_config),
+      current_pose_(config.robot_pose) {
 }
 
 bool UgvRuntime::open() {
@@ -147,6 +151,15 @@ bool UgvRuntime::open() {
     if (!map_transport_.open()) {
         return false;
     }
+
+    // Live SLAM pose is optional.
+    //
+    // If ORB-SLAM3 has already created /ugv_pose,
+    // connect to it. Otherwise continue using the
+    // configured robot pose as the fallback.
+    pose_transport_opened_ = pose_transport_.open();
+
+    current_pose_ = config_.robot_pose;
 
     opened_ = true;
     return true;
@@ -186,13 +199,20 @@ bool UgvRuntime::processMap(
 
     output.map_valid = true;
 
+    // IMPORTANT:
+    // Use the current pose, which is normally supplied by
+    // ORB-SLAM3 through /ugv_pose when live pose transport
+    // is available. If no live pose is available, this
+    // remains the configured fallback pose.
+    const PlannerPose& robot_pose = current_pose_;
+
     output.robot_footprint_observed =
         isRobotFootprintObserved(
             frame,
             config_.map_geometry,
             config_.planner_config
                 .robot_config.geometry,
-            config_.robot_pose
+            robot_pose
         );
 
     if (!output.robot_footprint_observed) {
@@ -206,7 +226,7 @@ bool UgvRuntime::processMap(
 
     output.path = planner_.planPath(
         cost_map,
-        config_.robot_pose,
+        robot_pose,
         config_.goal
     );
 
@@ -223,7 +243,7 @@ bool UgvRuntime::processMap(
     const PlannerCommand command =
         controller_.compute(
             output.path,
-            config_.robot_pose
+            robot_pose
         );
 
     output.safety = SafetyCommandGate::apply(
@@ -244,6 +264,30 @@ bool UgvRuntime::step(
         return false;
     }
 
+    // Non-blocking live pose update.
+    //
+    // If a new ORB-SLAM3 pose is available, replace the
+    // current pose. If not, retain the previous pose.
+    if (pose_transport_opened_) {
+        PoseFrame pose_frame;
+
+        if (pose_transport_.tryConsume(pose_frame) &&
+            pose_frame.isValid()) {
+
+            current_pose_.x_m = pose_frame.x_m;
+            current_pose_.y_m = pose_frame.y_m;
+            current_pose_.yaw_rad = pose_frame.yaw_rad;
+
+            std::cout
+                << "LIVE_POSE seq=" << pose_frame.sequence
+                << " timestamp_ns=" << pose_frame.timestamp_ns
+                << " x=" << current_pose_.x_m
+                << " y=" << current_pose_.y_m
+                << " yaw=" << current_pose_.yaw_rad
+                << std::endl;
+        }
+    }
+
     MetricMapFrame frame;
 
     if (!map_transport_.consume(frame)) {
@@ -259,6 +303,9 @@ bool UgvRuntime::step(
 }
 
 void UgvRuntime::close() {
+    pose_transport_.close();
+    pose_transport_opened_ = false;
+
     map_transport_.close();
     opened_ = false;
 }
